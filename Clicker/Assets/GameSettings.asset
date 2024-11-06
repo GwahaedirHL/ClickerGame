@@ -16,6 +16,7 @@ MonoBehaviour:
   modifier: 1
   countdownInterval: 5
   divisor: 10
+  clickEnergyCost: 0.05
   autoCollectInterval: 5000
   autoCollectCurrency: 100
   autoCollectBonusPercent: 0.1

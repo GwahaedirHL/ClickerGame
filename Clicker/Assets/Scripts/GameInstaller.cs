@@ -9,8 +9,8 @@ public class GameInstaller : MonoInstaller
     public ClickerObject clickerPrefab;
     public CoinSpawner coinSpawner;
     public CurrencyView currencyView;
-    public GameObject coinPopupPrefab;
     public EnergyBarView energyBarView;
+    public GameObject coinPopupPrefab;
 
     public override void InstallBindings()
     {        
