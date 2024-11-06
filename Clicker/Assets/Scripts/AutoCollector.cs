@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using UI;
 using UnityEngine.Events;
 using Zenject;
 
@@ -6,15 +7,15 @@ namespace Game
 {
     public class AutoCollector : IInitializable
     {
-        GameSettings currencySettings;
+        GameSettings gameSettings;
+        CurrencyView currencyView;
         bool isTimerRunning;
 
-        public event UnityAction<int> AddCurrency;
-
         [Inject]
-        public void Construct(GameSettings currencySettings)
+        public void Construct(GameSettings gameSettings, CurrencyView currencyView)
         {
-            this.currencySettings = currencySettings;
+            this.gameSettings = gameSettings;
+            this.currencyView = currencyView;
         }
 
         public void Initialize()
@@ -27,8 +28,9 @@ namespace Game
         {
             while (isTimerRunning)
             {
-                await UniTask.Delay(currencySettings.AutoCollectInterval);
-                AddCurrency?.Invoke(currencySettings.AutoCollectCurrency);
+                await UniTask.Delay(gameSettings.AutoCollectInterval);
+                CurrentBalance.Value += gameSettings.AutoCollectCurrency;
+                currencyView.UpdateCurrencyDisplay();
             }
         }
     }

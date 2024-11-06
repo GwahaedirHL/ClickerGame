@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: GameSettings
   m_EditorClassIdentifier: 
   baseCurrencyPerTap: 10
+  modifier: 1
+  countdownInterval: 5
+  divisor: 10
   autoCollectInterval: 5000
   autoCollectCurrency: 100
   autoCollectBonusPercent: 0.1

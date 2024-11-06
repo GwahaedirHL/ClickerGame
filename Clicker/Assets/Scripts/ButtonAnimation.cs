@@ -47,7 +47,7 @@ namespace UI
 
                 time += Time.deltaTime;
                 clickButton.transform.localScale = Vector3.Lerp(clickButton.transform.localScale, target, time / animationDuration);
-                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                await UniTask.Yield(cancellationToken);
             }
 
             clickButton.transform.localScale = target;

@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 namespace Game
 {
@@ -6,30 +6,52 @@ namespace Game
     public class GameSettings : ScriptableObject
     {
 
-        [SerializeField, Header("Базовое значение валюты за тап")]
-        int baseCurrencyPerTap = 10;
+        [SerializeField, Header("Р‘Р°Р·РѕРІРѕРµ Р·РЅР°С‡РµРЅРёРµ РІР°Р»СЋС‚С‹ Р·Р° С‚Р°Рї")]
+        int baseCurrencyPerTap = 10;        
 
-        [SerializeField, Header("Интервал автосбора (в миллисекундах)")]
+        [SerializeField, Header("РњРѕРґРёС„РёРєР°С‚РѕСЂ С‚Р°РїР°")]
+        int modifier = 1;
+
+        [SerializeField, Header("РџРµСЂРёРѕРґ РІСЂРµРјРµРЅРё РІ СЃРµРєСѓРЅРґР°С…")]
+        int countdownInterval = 5;
+
+        [SerializeField, Header("Р”РµР»РёС‚РµР»СЊ РІСЂРµРјРµРЅРё")]
+        int divisor = 1;
+
+        [SerializeField, Header("РЎС‚РѕРёРјРѕСЃС‚СЊ РєР»РёРєР° РІ РїСЂРѕС†РµРЅС‚Р°С… СЌРЅРµСЂРіРёРё"), Range(0f, 1f)]
+        float clickEnergyCost = 0.1f;
+
+        [Space, Header("РђРІС‚РѕСЃР±РѕСЂ")]
+        [SerializeField, Header("РРЅС‚РµСЂРІР°Р» Р°РІС‚РѕСЃР±РѕСЂР° (РІ РјРёР»Р»РёСЃРµРєСѓРЅРґР°С…)")]
         int autoCollectInterval = 5000;
 
-        [SerializeField, Header("Сумма автосбора за интервал")]
+        [SerializeField, Header("РЎСѓРјРјР° Р°РІС‚РѕСЃР±РѕСЂР° Р·Р° РёРЅС‚РµСЂРІР°Р»")]
         int autoCollectCurrency = 100;
 
-        [SerializeField, Header("Процент бонуса от автосбора")]
+        [SerializeField, Header("РџСЂРѕС†РµРЅС‚ Р±РѕРЅСѓСЃР° РѕС‚ Р°РІС‚РѕСЃР±РѕСЂР°")]
         public float autoCollectBonusPercent = 0.1f;
 
-        [SerializeField, Header("Использовать бонус")]
+        [SerializeField, Header("РСЃРїРѕР»СЊР·РѕРІР°С‚СЊ Р±РѕРЅСѓСЃ РѕС‚ Р°РІС‚РѕСЃР±РѕСЂР°")]
         public bool useBonus = true;
 
         /// <summary>
-        /// Значение валюты с добавочным бонусом от автосбора
+        /// Р—РЅР°С‡РµРЅРёРµ РІР°Р»СЋС‚С‹ СЃ РґРѕР±Р°РІРѕС‡РЅС‹Рј Р±РѕРЅСѓСЃРѕРј РѕС‚ Р°РІС‚РѕСЃР±РѕСЂР°
         /// </summary>
-        int currencyWithBonus => (int)Mathf.Round(autoCollectCurrency * autoCollectBonusPercent) + baseCurrencyPerTap;
+        int CurrencyWithBonus => Mathf.RoundToInt(autoCollectCurrency * autoCollectBonusPercent) + baseCurrencyPerTap;
+        int CurrencyPerTap => useBonus ? CurrencyWithBonus : baseCurrencyPerTap;
 
         public int AutoCollectInterval => autoCollectInterval;
-
         public int AutoCollectCurrency => autoCollectCurrency;
+        public int CountdownInterval => countdownInterval;
+        public float ClickEnergyCost => clickEnergyCost;
 
-        public int CurrencyPerTap => useBonus ? currencyWithBonus : baseCurrencyPerTap;
+        public int EarnPerTap(int collectedForPeriod)
+        {
+            if (collectedForPeriod == 0)
+                return CurrencyPerTap;
+
+            else
+                return CurrencyPerTap * modifier + collectedForPeriod / divisor;
+        }
     }
 }

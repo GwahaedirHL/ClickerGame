@@ -1,5 +1,7 @@
+using Game;
 using TMPro;
 using UnityEngine;
+using Zenject;
 
 namespace UI
 {
@@ -8,9 +10,9 @@ namespace UI
         [SerializeField]
         TextMeshProUGUI currencyText;
 
-        public void UpdateCurrencyDisplay(int amount)
+        public void UpdateCurrencyDisplay()
         {
-            currencyText.text = amount.ToString();
+            currencyText.text = CurrentBalance.Value.ToString();
         }
     }
 }

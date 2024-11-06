@@ -9,7 +9,7 @@ namespace UI
     public class CoinSpawner : MonoBehaviour
     {
         [SerializeField]
-        Button clickButton;
+        Transform root;
 
         [SerializeField]
         float coinMoveDistance = 100f;
@@ -17,26 +17,19 @@ namespace UI
         [SerializeField]
         float coinMoveDuration = 0.5f;
 
-        int coinsPerClick;
         CoinsView.Factory coinFactory;
 
         [Inject]
-        public void Constructor(GameSettings settings, CoinsView.Factory coinFactory)
+        public void Constructor(CoinsView.Factory coinFactory)
         {
-            coinsPerClick = settings.CurrencyPerTap;
             this.coinFactory = coinFactory;
         }
 
-        private void Start()
-        {
-            clickButton.onClick.AddListener(() => SpawnCoin(coinsPerClick).Forget());
-        }
-
-        private async UniTaskVoid SpawnCoin(int coinAmount)
+        public async UniTaskVoid SpawnCoin(int coinAmount)
         {
             CoinsView coinPopup = coinFactory.Create();
-            coinPopup.transform.SetParent(clickButton.transform);
-            coinPopup.transform.position = clickButton.transform.position;
+            coinPopup.transform.SetParent(root);
+            coinPopup.transform.position = root.position;
             coinPopup.transform.localRotation = Quaternion.identity;
 
             coinPopup.SetValueText(coinAmount.ToString());
@@ -44,7 +37,7 @@ namespace UI
             Destroy(coinPopup.gameObject);
         }
 
-        private async UniTask MoveCoinUpward(RectTransform coinTransform)
+        async UniTask MoveCoinUpward(RectTransform coinTransform)
         {
             Vector3 startPosition = coinTransform.position;
             Vector3 targetPosition = startPosition + Vector3.up * coinMoveDistance;
