@@ -46,11 +46,12 @@ namespace Game
                 return;
 
             energyController.SpendEnergy();
-            collectedForPeriod += gameSettings.EarnPerTap(collectedForPeriod);
-            CurrentBalance.Value += gameSettings.EarnPerTap(collectedForPeriod);
 
+            int reward = gameSettings.EarnPerTap(collectedForPeriod);
+            collectedForPeriod += reward;
+            CurrentBalance.Value += reward;
             currencyView.UpdateCurrencyDisplay();
-            coinSpawner.SpawnCoin(gameSettings.EarnPerTap(collectedForPeriod)).Forget();
+            coinSpawner.SpawnCoin(reward).Forget();
         }
         
         void ResetSum()
