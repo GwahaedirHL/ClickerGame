@@ -1,45 +1,39 @@
-Механика кликера и автосбора
+# Clicker & Auto-Collect — Zenject test task
 
-Задача содержит перечень требований и описание функционала. Требуется
-разработать новый проект, который состоит из нескольких элементов:
+A tap-to-earn clicker with passive auto-collect, built with **Zenject** and **UniTask**.
 
-  • Кнопка, нажатие на которую дает софт валюту
-  • Система «автосбор», дающая регулярный доход софт валюты (подробнее в
-пункте «автосбор)
-    o Сделать связь через модификатор от «автосбора» к нажатию на
-«кликер» (подробнее в пункте «Автосбор»)
+## Task
 
-Бонусом будет объяснение того, почему был выбран именно такой подход к
-реализации.
+- Tapping the clicker spends energy and grants soft currency, with a floating number animation
+- Auto-collect grants X currency every N seconds
+- Optional: 10% of the auto-collect amount is added to every tap
+- All values are configured by game designers in a ScriptableObject
 
-Краткое резюме задачи
-Создать систему получения софт валюты за тап. Создать «автосборщик»,
-который каждые N секунд начисляет пассивно X софт валюты.
-Опционально – сделать связь между кликером и автосбором, чтобы 10% от
-начисляемых автосбором средств прибавлялось к доходу, который игрок получает
-за каждый тап (пример: если автосбор начисляет 100 софт валюты, то каждый тап должен
-давать дополнительно 10% софт валюты от 100)
+## Implementation
 
-Кликер (подробное описание)
-На главном экране находится кликер-объект, при нажатии на зону клика которого
-происходит списание X единиц энергии и начисление Y единиц софт валюты.
-При сборе софт валюты возникает и “улетает” анимированное число софт валюты в
-количестве Y
+**Composition root.** `GameInstaller` (Zenject `MonoInstaller`) binds the settings, services and views; coin popups are created through a Zenject factory.
 
-Софт валюта за тап
-Количество получаемой софт валюты задается геймдизайнерами в scriptable object
-клик механики с помощью следующих переменных:
-  ● Базовое число софт валюты получаемое за тап
-  ● Модификатор тапа (по умолчанию цифра, 1 к которой могут быть прибавлены
-другие значения от других переменных)
-  ● Модификатор иной переменной (состоит из двух множителей)
-    ○ Сумма доходов от заданного в настройках scriptable object значения в T
-времени
-    ○ Делитель, который задается гейм дизайнером в том же SO
-    
-Автосбор
-Каждые N секунд игроку начисляется X софт валюты.
+**Game logic lives in plain C# services**, separate from MonoBehaviour views:
 
-Дополнительная задача (опционально)
-10% от получаемой софт валюты X прибавляется к доходу c каждого тапа
-совершаемого игроком.
+| Service | Responsibility |
+|---|---|
+| `TapManager` | Handles a tap: checks energy, calculates the reward, updates the balance, spawns a popup |
+| `AutoCollector` | UniTask loop that adds currency every N ms |
+| `EnergyController` | Energy pool; every tap spends a configurable share, taps are blocked at zero |
+| `CountdownTimer` (`ITickable`) | Resets the per-period tap income every T seconds |
+
+**Views** only display data and forward input: `ClickerObject`, `CurrencyView`, `EnergyBarView`, `CoinSpawner` / `CoinsView` (floating popup animated with UniTask).
+
+**Balance** is set in `GameSettings` (ScriptableObject): base reward per tap, tap modifier, period T and divisor, energy cost per tap, auto-collect interval and amount, bonus percent and an on/off toggle. The tap reward is calculated in `GameSettings.EarnPerTap`.
+
+## Why this approach
+
+- **Plain C# services with constructor injection** — logic doesn't depend on scene objects, dependencies are explicit, and the classes are easy to unit-test.
+- **Thin views** — visuals can change without touching game logic.
+- **One ScriptableObject for all numbers** — designers tune the balance without code changes.
+- **UniTask for timers and animations** — async loops work in plain classes, where coroutines are not available.
+
+## Running
+
+- Unity **2022.3.50f1**
+- Open the `Clicker/` folder in Unity Hub, then `Assets/Scenes/MainScene.unity`
